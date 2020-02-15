@@ -1,10 +1,12 @@
 package lu.pistache.pinger;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -19,7 +21,9 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 60000)
     public void reportCurrentTime() throws IOException {
-        String html = Jsoup.connect("https://zukr.herokuapp.com").get().html();
-        log.info("The time is now {}", dateFormat.format(new Date()) + " and the page downloaded is: " + html);
+        Document document = Jsoup.connect("https://zukr.herokuapp.com").get();
+        String html = document.html();
+        Assert.isTrue(html.contains("<title>Nightscout</title>"));
+        log.info("Page pinged successfully");
     }
 }
